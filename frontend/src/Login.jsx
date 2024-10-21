@@ -7,8 +7,6 @@ const Login = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -36,31 +34,37 @@ const Login = () => {
       localStorage.setItem('user_info',  JSON.stringify(userData.user_info));
       navigate(`/${userData.user.userId}`);
     } else {
-      setMessage('Login failed');
+      setMessage(data.message);
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleLogin}>
+        <h2>Code Mirror Login</h2>
+        <div className="input-container">
         <input
           type="text"
           placeholder="Mobile Number"
           value={mobile}
           onChange={(e) => setMobile(e.target.value)}
+          required
         />
+        </div>
+        <div className="input-container">
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
-        <button type="submit">Login</button>
-        <br/>
-        <Link to="/register">Register</Link>
+        </div>
+        <button type="submit" className="login-btn">Login</button>
+        <br/><br/>
+        <Link to="/register">Register User</Link>
+        {message && <p>{message}</p>}
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 };

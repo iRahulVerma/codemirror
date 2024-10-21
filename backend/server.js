@@ -11,7 +11,7 @@ const jwtSecret = 'd3d8f7a6d9a813a804854d3ed642f9f1';
 app.use(express.json());
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:5174',
   methods: ['GET', 'POST'],
   credentials: true,
 }));
@@ -20,7 +20,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:5174',
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -70,20 +70,27 @@ app.post('/api/login', async (req, res) => {
     const { mobile, password } = req.body;
 
   const userResult = await pool.query('SELECT * FROM users WHERE mobile_number = $1', [mobile]);
-  const user = userResult.rows[0];
 
-  if (!user) {
-    return res.status(400).json({ message: 'Invalid credentials' });
+console.log("userResult>>>",userResult);
+
+  if(userResult.rows.length > 0) {
+    const user = userResult.rows[0];
+    if (!user) {
+      return res.status(200).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(200).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user.id, mobile: user.mobile }, jwtSecret, { expiresIn: '1h' });
+
+    return res.json({ token });
+
+  }else{
+    return res.status(200).json({ message: 'User Not Exist' });
   }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: 'Invalid credentials' });
-  }
-
-  const token = jwt.sign({ userId: user.id, mobile: user.mobile }, jwtSecret, { expiresIn: '1h' });
-
-  return res.json({ token });
 });
 
 app.get('/api/user-details', authenticateToken, (req, res) => {
