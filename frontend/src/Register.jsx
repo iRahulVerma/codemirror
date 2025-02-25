@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from './constants';
+
 
 const Register = () => {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
-
-
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5010/api/register', {
+      const response = await axios.post(`${API_BASE_URL}/api/register`, {
         mobile,
         password,
       });

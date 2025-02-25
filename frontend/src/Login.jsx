@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_BASE_URL } from './constants';
 
 const Login = () => {
   const [mobile, setMobile] = useState('');
@@ -10,7 +11,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:5010/api/login', {
+    const response = await fetch(`${API_BASE_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +23,7 @@ const Login = () => {
 
     if (data.token) {
       localStorage.setItem('token', data.token);
-      const userDetailsResponse = await fetch('http://localhost:5010/api/protected', {
+      const userDetailsResponse = await fetch(`${API_BASE_URL}/api/protected`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
